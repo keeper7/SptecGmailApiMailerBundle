@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sptec\GmailApiMailerBundle\DependencyInjection;
 
-use Google;
+use Google\Client;
 use Sptec\GmailApiMailerBundle\Command\GoogleAuthCommand;
 use Sptec\GmailApiMailerBundle\Google\GoogleHelper;
 use Sptec\GmailApiMailerBundle\Mailer\Bridge\GmailApi\Transport\GmailApiTransportFactory;
@@ -28,7 +28,7 @@ class SptecGmailApiMailerExtension extends Extension
         $container->setParameter('env(' . GoogleHelper::TOKEN_CONST . ')', '{}');
 
         $container->register(GoogleHelper::class)
-            ->addArgument(new Reference(Google::class))
+            ->addArgument(new Reference(Client::class))
             ->addArgument($config['redirect_uri'])
             ->addArgument($config['access_token'])
             ->addArgument(new Reference('kernel'))

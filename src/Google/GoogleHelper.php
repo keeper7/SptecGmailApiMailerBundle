@@ -6,7 +6,7 @@ namespace Sptec\GmailApiMailerBundle\Google;
 
 use Google\Exception;
 use Google\Service\Gmail;
-use Google;
+use Google\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -18,7 +18,7 @@ class GoogleHelper
 
     public const USER = 'me';
 
-    private Google $client;
+    private Client $client;
 
     private string $redirectUri;
 
@@ -27,7 +27,7 @@ class GoogleHelper
     private KernelInterface $kernel;
 
     public function __construct(
-        Google $client,
+        Client $client,
         string $redirectUri,
         array $access_token,
         KernelInterface $kernel
@@ -39,12 +39,12 @@ class GoogleHelper
         $this->setClientDefaults();
     }
 
-    public function getClient(): Google
+    public function getClient(): Client
     {
         return $this->client;
     }
 
-    public function getAuthenticatedClient(): Google
+    public function getAuthenticatedClient(): Client
     {
         $this->client->setAccessToken($this->access_token);
 
