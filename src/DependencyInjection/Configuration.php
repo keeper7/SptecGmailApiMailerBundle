@@ -30,7 +30,11 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->scalarNode('access_token')
                     ->info('Your Google Api token')
-                    ->defaultValue('%env(json:' . GoogleHelper::TOKEN_CONST . ')%')
+                    ->defaultValue('%env(json:file:resolve:' . GoogleHelper::AUTH_CONST . ')%')
+                ->end()
+                ->scalarNode('auth_file')
+                    ->info('Your Auth file with token')
+                    ->defaultValue('%kernel.project_dir%/config/gmail/auth.json')
                 ->end()
             ->end()
         ;

@@ -25,13 +25,14 @@ class SptecGmailApiMailerExtension extends Extension
 
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('env(' . GoogleHelper::TOKEN_CONST . ')', '{}');
+//        $container->setParameter('env(' . GoogleHelper::TOKEN_CONST . ')', '{}');
+        $container->setParameter('env(' . GoogleHelper::AUTH_CONST . ')', $config['auth_file']);
 
         $container->register(GoogleHelper::class)
             ->addArgument(new Reference(Client::class))
             ->addArgument($config['redirect_uri'])
             ->addArgument($config['access_token'])
-            ->addArgument(new Reference('kernel'))
+            ->addArgument($config['auth_file'])
         ;
 
         $container->register(GoogleAuthCommand::class)

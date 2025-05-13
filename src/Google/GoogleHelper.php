@@ -15,6 +15,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 class GoogleHelper
 {
     public const TOKEN_CONST = 'GOOGLE_ACCESS_TOKEN';
+    public const AUTH_CONST = 'GOOGLE_AUTH';
 
     public const USER = 'me';
 
@@ -24,18 +25,18 @@ class GoogleHelper
 
     private array $access_token;
 
-    private KernelInterface $kernel;
+    private string $auth_file;
 
     public function __construct(
         Client $client,
         string $redirectUri,
         array $access_token,
-        KernelInterface $kernel
+        string $auth_file
     ) {
         $this->redirectUri = $redirectUri;
         $this->access_token = $access_token;
-        $this->kernel = $kernel;
         $this->client = $client;
+        $this->auth_file = $auth_file;
         $this->setClientDefaults();
     }
 
@@ -62,22 +63,14 @@ class GoogleHelper
 
     public function writeAccessToken(array $accessToken): void
     {
-        $application = new Application($this->kernel);
-        $application->setAutoExit(false);
-        $input = new ArrayInput([
-            'command' => 'secrets:set',
-            'name' => self::TOKEN_CONST,
-        ]);
-
-        $stream = fopen('php://memory', 'rb+');
-        if ($stream === false) {
-            throw new \RuntimeException('Could not open stream');
+        $accessToken = json_encode($accessToken, JSON_THROW_ON_ERROR);
+        $path = $this->auth_file;
+        if (!is_dir(dirname($path))) {
+            if (!mkdir($concurrentDirectory = dirname($path), 0777, true) && !is_dir($concurrentDirectory)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
         }
-
-        fwrite($stream, json_encode($accessToken, JSON_THROW_ON_ERROR));
-        rewind($stream);
-        $input->setStream($stream);
-        $application->run($input, new NullOutput());
+        file_put_contents($path, $accessToken);
     }
 
     private function setClientDefaults(): void
